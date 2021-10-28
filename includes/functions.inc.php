@@ -99,4 +99,25 @@ function emptyInputLogin($username,$password){
 
 function loginUser($conn, $username, $password){
 	$uidExists = uidExists($conn, $username, $username);
+
+	if ($uidExists === false) {
+		header("location: ../login.php?error=wrongLogin");
+		exit();
+	}
+	
+	$passwordHashed = $uidExists["usersPwd"];
+	$checkedPassword = password_verify($password,$passwordHashed);
+
+	if ($checkedPassword === false) {
+		header("location: ../login.php?error=wrongLogin");
+		exit();
+	}
+	else if($checkedPassword === true) {
+		session_start();
+		$_SESSION["userId"] =$uidExists["usersId"];
+		$_SESSION["userUId"] =$uidExists["usersUid"];
+
+		header("location: ../login.php");
+		exit();
+	}
 }
